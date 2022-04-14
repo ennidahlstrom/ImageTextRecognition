@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text, StyleSheet, Button, TouchableOpacity, ActivityIndicator, LogBox} from 'react-native';
+import {View, Text, StyleSheet, TouchableOpacity, Alert, ActivityIndicator, LogBox} from 'react-native';
 import { RNCamera } from 'react-native-camera';
 import { useCamera } from 'react-native-camera-hooks';
 import TextRecognition from 'react-native-text-recognition';// <- npm install react-native-text-recognition@ml 
@@ -17,6 +17,7 @@ export default function Camera({navigation, route}) {
         LogBox.ignoreLogs([ 
             "ViewPropTypes will be removed",
         ])
+
     },[])
   
 // User takes a picture and the path to said image is saved
@@ -41,8 +42,9 @@ export default function Camera({navigation, route}) {
             // NO TEXT DETECTED
             const result = await TextRecognition.recognize(imagePath);
             if (result.length === 0) {
-              alert('Error. Nothing detected. Please try again.');
-              setScanning(false);
+             // alert('Error. Nothing detected. Please try again.');
+             nothingDetected(); 
+             setScanning(false);
               return;
             }
 
@@ -85,13 +87,31 @@ export default function Camera({navigation, route}) {
                 handleCodeDetected(arrayOfCodes[0]);
               } else {
                 // No codes detected (text was detected but it did not contain a code)
-                alert('Error. No suitable codes detected. Code must be 4-digits in length and can contain only numbers.');
+                nothingDetected(); 
+                //alert('Error. No suitable codes detected. Code must be 4-digits in length and can contain only numbers.');
               }
           } catch (e) {
             alert(e);
           }}
     })();
   },[imagePath])
+
+
+  const nothingDetected = () => Alert.alert(
+    "No code detected.", "Code must be 4 digits in length and can contain only numbers.", 
+    [
+      {
+        text: "Type code",  onPress: () => console.log('pressed type')
+      },
+      {
+        text: "Scan Again",
+        onPress: () => console.log('pressed scan'),
+      }
+  ],
+  {cancelable: false}
+  );
+
+
 
   // Four-number code detected
  
@@ -119,8 +139,7 @@ export default function Camera({navigation, route}) {
         ref={cameraRef}
         type={RNCamera.Constants.Type.back}
         style={styles.preview} captureAudio={false}
-        fixOrientation={true}>
-
+        fixOrientation={true} >
           {scanning 
             ? <>
               <ActivityIndicator size="large" color="#fff"/>
