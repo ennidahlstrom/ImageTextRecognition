@@ -18,7 +18,7 @@ export default function Home({navigation, route}) {
   return (
     <View style={styles.body}>
      <Text style={styles.headingText}>Vasikan neuvolakortti</Text>
-   
+   <Text>test</Text>
      <TouchableOpacity onPress={() => navigation.navigate('Camera')}>
           <View style={{ flex: 0, flexDirection: 'row', justifyContent: 'center' }}>
             <View style={styles.button} >
